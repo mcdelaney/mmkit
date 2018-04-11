@@ -1,0 +1,6 @@
+@task
+def {{job_name}}({{arg_list}}):
+    input_args = locals()
+    script_to_run = "Rscript {{path_to_file}} {{arg_tmp}}".format(**input_args)
+    with cd("%s/{{project_dir}}/" % DEPLOY_DIR):
+        run(script_to_run)

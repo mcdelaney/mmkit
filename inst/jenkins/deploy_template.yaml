@@ -1,0 +1,5 @@
+project_name: {{project_name}}
+github_url: {{github_url}}
+branch: {{branch}}
+user_email: {{user_email}}
+executables:

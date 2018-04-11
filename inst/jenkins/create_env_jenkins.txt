@@ -1,0 +1,29 @@
+# Add a new job with type: free-style software project.
+# Configure git source code management for the project, and specify credentials as necessary.
+# Set build step type to Execute Shell. Copy the code below into the window.
+# Activate post build actions -> email notification on build failure.  Add your address.
+
+rm -rf $HOME/{{project_dir}}
+echo "Creating source directory"
+mkdir $HOME/{{project_dir}}
+
+pwd
+
+echo "Copying current source from GitHub to source directory"
+cp -rf -a * $HOME/{{project_dir}}
+
+cd $HOME/{{project_dir}}
+
+echo "Creating virtualenv"
+virtualenv env
+
+echo "Activating virtualenv"
+. env/bin/activate
+
+echo "Installing libraries"
+pip install -r requirements.txt --upgrade
+
+echo "deploying on server"
+cd deploy
+fab -P deploy_code:{{project_dir}}
+fab -P deploy_packrat

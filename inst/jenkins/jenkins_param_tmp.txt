@@ -1,0 +1,4 @@
+        <hudson.model.ChoiceParameterDefinition>
+          <name>{{arg_name}}</name>
+          <description></description>
+        </hudson.model.ChoiceParameterDefinition>
