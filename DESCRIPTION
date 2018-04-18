@@ -1,10 +1,8 @@
 Package: mmkit
 Title: mmkit
 Description: Description: Tools for querying databases.
-Version: 0.53
-Authors@R: person("Matt", "Delaney", email = "mdelaney@2u.com",
-  role = c("aut", "cre"))
-  person("Mark", "Thompson", email = "mthompson@2u.com",
+Version: 0.60
+Authors@R: person("Matt", "Delaney", email = "mcdelaney@gmail.com",
   role = c("aut", "cre"))
 Depends: R (>= 3.1.1)
 License: English Common Law
@@ -14,5 +12,5 @@ Imports: DBI, dplyr, dbplyr, httr, jsonlite, RPostgreSQL, yaml
 RoxygenNote: 6.0.1
 NeedsCompilation: no
 Packaged: 2018-01-14 18:00:07 UTC; mdelaney
-Author: Mark Thompson [aut, cre]
-Maintainer: Mark Thompson <mthompson@2u.com>
+Author: Matt Delaney [aut, cre]
+Maintainer: Matt Delaney <mcdelaney@gmail.com>
