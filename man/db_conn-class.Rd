@@ -4,7 +4,7 @@
 \name{db_conn-class}
 \alias{db_conn-class}
 \alias{db_conn}
-\title{send}
+\title{read_sql}
 \arguments{
 \item{database}{Name of database for which the connection should created.  Must correspond to a creds.json file key.}
 
@@ -28,6 +28,11 @@ all tables will be returned.}
 Partial matching applied. Optional.}
 }
 \description{
+Read a sql statement from disk.
+
+Execute arbitrary sql, expecting a dataframe in response.
+Str_form substitution params supported by default.
+
 Execute arbitrary sql, expecting no response.
 Str_form substitution params supported by default.
 
@@ -52,8 +57,10 @@ Delivering dead simple database connections since June 7th 2016.
 \item{\code{get_cols(table, match_string = NA)}}{Return a list of columns in the specified table.
 Can optionally apply a regex match to find a specific column.}
 
-\item{\code{query(statement, ...)}}{Execute query using initialized database connection. Str_form templating is supported by default.}
+\item{\code{query(statement_or_path, ...)}}{Execute query using initialized database connection. Str_form templating is supported by default.}
 
-\item{\code{send(statement, ...)}}{Send a statement using initialized database connection. Str_form templating is supported by default.}
+\item{\code{read_sql(filepath)}}{Read a sql file from disk.}
+
+\item{\code{send(statement_or_path, ...)}}{Send a statement using initialized database connection. Str_form templating is supported by default.}
 }}
 
