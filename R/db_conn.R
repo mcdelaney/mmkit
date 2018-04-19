@@ -142,20 +142,6 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
        stop("mmkit::read_creds: Invalid cred_location")
      })
 
-   if (names(creds) %in% 'dbname') {
-     creds[['db_name']] = creds[['dbname']]
-   }
-
-   if ('cluster_name' %in% names(creds)) {
-    creds$host <- creds$cluster_name
-    creds <- creds[!names(creds) %in% "cluster_name"]
-   }
-
-   if ('username' %in% names(creds)) {
-    creds$user <- creds$username
-    creds <- creds[!names(creds) %in% "username"]
-   }
-
    if ('database' %in% names(creds)) {
     creds$db_name <- creds$database
     creds <- creds[!names(creds) %in% "database"]
@@ -166,8 +152,21 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
    }else{
     creds <- creds[[database]]
    }
-
-
+  
+   if ('dbname' %in% names(creds)) {
+     creds[['db_name']] = creds[['dbname']]
+   }
+   
+   if ('cluster_name' %in% names(creds)) {
+     creds$host <- creds$cluster_name
+     creds <- creds[!names(creds) %in% "cluster_name"]
+   }
+   
+   if ('username' %in% names(creds)) {
+     creds$user <- creds$username
+     creds <- creds[!names(creds) %in% "username"]
+   }
+   
    db_sub_params <- list(...)
 
    if (length(db_sub_params) > 0) {
