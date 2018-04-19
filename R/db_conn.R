@@ -135,6 +135,12 @@ db_conn <- setRefClass(
 #' @export read_creds
 read_creds <- function(database, ..., cred_location = "~/creds.json") {
    required_fields <- c("db_name", "user", "password", "host", "port")
+   
+   creds = tryCatch(
+     jsonlite::fromJSON(cred_location),
+     error = function(e) {
+       stop("mmkit::read_creds: Invalid cred_location")
+     })
 
    if (names(creds) %in% 'dbname') {
      creds[['db_name']] = creds[['dbname']]
@@ -154,12 +160,6 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
     creds$db_name <- creds$database
     creds <- creds[!names(creds) %in% "database"]
    }
-
-   creds = tryCatch(
-    jsonlite::fromJSON(cred_location),
-    error = function(e) {
-     stop("mmkit::read_creds: Invalid cred_location")
-    })
 
    if (!database %in% names(creds)) {
     stop(sprintf("Credentials file has no key for database: %s!", database))
