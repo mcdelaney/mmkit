@@ -129,17 +129,27 @@ db_conn <- setRefClass(
     #' @param match_string String to search for in columns.
     #' Partial matching applied. Optional.
     #' @export
-    get_tables = function(schema=NA, match_string=NA) {
+    get_tables = function(schema=NA, match_string=NA, exclude_system=TRUE) {
       
-      where = ifelse(is.na(schema), '', str_form("WHERE table_schema = '{{s}}'",
-                                                 s = schema))
+      
+      conditions = c(ifelse(is.na(schema), NA, 
+                            str_form("table_schema in ('{{s}}')", s = schema)),
+                     ifelse(!exclude_system, NA, 
+                            "table_schema not in ('information_schema', 'pg_catalog')")
+      )
+      
+      if (!all(is.na(conditions))) {
+        where <- paste0("WHERE ", paste0(conditions[!is.na(conditions)], collapse = " AND "))
+      }else{
+        where = ''
+      }
       
       tables = DBI::dbGetQuery(conn = .self$connection$con,
                                str_form("SELECT table_schema, table_name
                                     FROM information_schema.tables
                                     {{where}}", where = where))
       
-      if (where == '') {
+      if (is.na(schema)) {
         tables = paste(tables$table_schema, tables$table_name, sep = ".")
       }else{
         tables = tables$table_name
