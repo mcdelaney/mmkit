@@ -295,13 +295,13 @@ conn_psql <- function(creds){
 
 conn_rpostgres <- function(creds){
   # Based on https://github.com/hadley/dplyr/issues/2292
-  
+
   if (0 == length(find.package("RPostgres", quiet = TRUE))) {
     stop("RPostgres not found. Install from http://github.com/rstats-db/RPostgres")
   }
-  
+
   "%||%" <- function(x, y) if (is.null(x)) y else x
-  
+
   db_disconnector <- function(con, name, quiet = FALSE) {
     reg.finalizer(environment(), function(...) {
       if (!quiet) {
@@ -312,35 +312,35 @@ conn_rpostgres <- function(creds){
     })
     environment()
   }
-  
+
   src_postgres2 <- function(dbname = NULL, host = NULL, port = NULL, user = NULL,
                             password = NULL, ...) {
     if (!requireNamespace("RPostgres", quietly = TRUE)) {
       stop("RPostgres package required to connect to postgres db", call. = FALSE)
     }
-    
+
     user <- user %||% ""
-    
+
     con <- dbConnect(RPostgres::Postgres(), host = host %||% "", dbname = dbname %||% "",
                      user = user, password = password %||% "", port = port %||% "", ...)
     info <- dbGetInfo(con)
-    
+
     dbplyr::src_sql("postgres", con, info = info,
                     disco = db_disconnector(con, "postgres"))
   }
-  
+
   if (!require(dplyr)) {
     warning("dplyr not available; could not redefine dplyr::src_postgres")
     return()
   }
-  
+
   unlockBinding("src_postgres", as.environment("package:dplyr"))
   assignInNamespace("src_postgres", src_postgres2, ns = "dplyr",
                     as.environment("package:dplyr"))
   assign("src_postgres", src_postgres2, "package:dplyr")
   lockBinding("src_postgres", as.environment("package:dplyr"))
   warning("dplyr::src_postgres has been redefined to use RPostgres!")
-  
+
   dplyr::src_postgres(dbname = creds$db_name, host = creds$host,
                       port = creds$port, user = creds$user,
                       password = creds$password)
