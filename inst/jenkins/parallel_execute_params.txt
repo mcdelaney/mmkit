@@ -1,5 +1,0 @@
-        <hudson.model.StringParameterDefinition>
-          <name>{{arg}}</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
