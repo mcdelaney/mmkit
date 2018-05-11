@@ -1,4 +1,0 @@
-    - {{job}}:
-        file_location: {{file_path}}
-        function_args:
-
