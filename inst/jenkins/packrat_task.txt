@@ -1,7 +1,0 @@
-@task
-def deploy_packrat():
-  script_to_run = "Rscript -e 'packrat::restore()'"
-  with cd("%s/{{project_dir}}/" % DEPLOY_DIR):
-    run(script_to_run)
-
-

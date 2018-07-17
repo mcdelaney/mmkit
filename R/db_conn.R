@@ -17,25 +17,24 @@ db_conn <- setRefClass(
   fields = c("connection", "con"),
   methods = list(
     initialize = function(database, ..., cred_location = "~/creds.json",
-                          database_type = "postgres", init_sql = NA) {
-      creds <- mmkit::read_creds(database, ..., cred_location)
+                          database_type = "postgres", init_sql = NA, dataset=NA) {
+      creds <- mmkit::read_creds(database, cred_location=cred_location)
       
       message(sprintf("Creating connection to %s.%s", database, creds$db_name))
       
       connection <<- switch(database_type,
-                            "postgres" = conn_psql(creds = creds),
-                            "rpostgres" = conn_rpostgres(creds = creds),
+                            "postgres" = conn_postgres(creds = creds),
                             "redshift" = conn_redshift(creds = creds),
                             "mysql" = conn_mysql(creds = creds),
                             "ms_sql" = conn_mssql(creds = creds),
+                            "bigquery" = conn_bigquery(creds = creds, 
+                                                       cred_location = cred_location,
+                                                       dataset = dataset),
                             stop("Database type must be postgres, rpostgres,
                               mysql, redshift or ms_sql"))
       
-      if (database_type == "ms_sql") {
-        con <<- connection
-      }else{
-        con <<- connection$con
-      }
+      
+      con <<- connection
       
       if (!is.na(init_sql)) {
         message(sprintf('Executing sql: %s', init_sql))
@@ -62,8 +61,8 @@ db_conn <- setRefClass(
       }else{
         statement = statement_or_path
       }
-
-      DBI::dbGetQuery(conn = .self$connection$con, str_form(statement, ...))
+      
+      DBI::dbGetQuery(conn = .self$connection, str_form(statement, ...))
     },
     
     #' @title send
@@ -79,7 +78,7 @@ db_conn <- setRefClass(
         statement = statement_or_path
       }
       
-      DBI::dbSendQuery(conn = .self$connection$con, str_form(statement, ...))
+      DBI::dbSendQuery(conn = .self$connection, str_form(statement, ...))
     },
     
     #' @description Return a list of columns from the requested table.
@@ -94,17 +93,17 @@ db_conn <- setRefClass(
         
         schema = strsplit(table, "\\.")[[1]][1]
         table = strsplit(table, "\\.")[[1]][2]
-        cols = DBI::dbGetQuery(conn = .self$connection$con,
+        cols = DBI::dbGetQuery(conn = .self$connection,
                                str_form("SELECT column_name AS col
-                                    FROM information_schema.columns
-                                    WHERE table_name = '{{table}}' AND
-                                    table_schema = '{{schema}}'
-                                    ORDER BY ordinal_position",
+                                        FROM information_schema.columns
+                                        WHERE table_name = '{{table}}' AND
+                                        table_schema = '{{schema}}'
+                                        ORDER BY ordinal_position",
                                         table = table, schema = schema))$col
         
       }else{
         
-        cols = DBI::dbGetQuery(conn = .self$connection$con,
+        cols = DBI::dbGetQuery(conn = .self$connection,
                                str_form("SELECT column_name AS col
                                     FROM information_schema.columns
                                     WHERE table_name = '{{table}}'
@@ -144,16 +143,17 @@ db_conn <- setRefClass(
         where = ''
       }
       
-      tables = DBI::dbGetQuery(conn = .self$connection$con,
+      tables = DBI::dbGetQuery(conn = .self$connection,
                                str_form("SELECT table_schema, table_name
-                                    FROM information_schema.tables
-                                    {{where}}", where = where))
+                                        FROM information_schema.tables
+                                        {{where}}", where = where))
       
       if (is.na(schema)) {
-        tables = paste(tables$table_schema, tables$table_name, sep = ".")
+        tables$table_name = paste(tables$table_schema, tables$table_name, sep = ".")
       }else{
         tables = tables$table_name
       }
+      
       if (!is.na(match_string)) {
         tables = tables[grepl(match_string, tables)]
       }
@@ -162,6 +162,7 @@ db_conn <- setRefClass(
     }
   )
 )
+
 
 #' @title read_creds
 #' @description Read database credentials from a file like creds.json
@@ -181,9 +182,7 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
     creds <- creds[!names(creds) %in% "database"]
   }
   
-  if (!database %in% names(creds)) {
-    stop(sprintf("Credentials file has no key for database: %s!", database))
-  }else{
+  if (database %in% names(creds)) {
     creds <- creds[[database]]
   }
   
@@ -209,13 +208,13 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
     })
   }
   
-  if (!all(required_fields %in% names(creds))) {
-    stop(sprintf("Credentials entry for %s missing keys: %s!",
-                 database, paste0(required_fields[!required_fields %in% names(creds)],
-                                  collapse = ", ")))
-  }
+  # if (!all(required_fields %in% names(creds))) {
+  #   stop(sprintf("Credentials entry for %s missing keys: %s!",
+  #                database, paste0(required_fields[!required_fields %in% names(creds)],
+  #                                 collapse = ", ")))
+  # }
   
-  invisible(creds)
+  return(creds)
 }
 
 #' @title conn_msql
@@ -271,77 +270,50 @@ conn_mysql <- function(creds){
     stop("No RMySQL installation found...Please install before trying again.")
   }
   
-  dplyr::src_mysql(dbname = creds$db_name, host = creds$host,
-                   port = creds$port, user = creds$user,
-                   password = creds$password)
+  DBI::dbConnect(drv = RMySQL::MySQL(), 
+                 dbname = creds$db_name, host = creds$host,
+                 port = creds$port, user = creds$user,
+                 password = creds$password)
   
 }
 
 
-#' @title conn_psql
+#' @title conn_postgres
 #' @description DBI interface for postgresql.
 #' @param creds A list with entries for db_name, host, user, password, and port.
-#' @import RPostgreSQL
+#' @import RPostgres
 
-conn_psql <- function(creds){
-  dplyr::src_postgres(dbname = creds$db_name, host = creds$host,
-                      port = creds$port, user = creds$user,
-                      password = creds$password)
+conn_postgres <- function(creds){
+  
+  if (!"RPostgres" %in% as.character(installed.packages(fields = "Name")[,1])) {
+    stop("No RPostgres installation found...Please install before trying again.")
+  }
+  
+  DBI::dbConnect(drv = RPostgres::Postgres(),
+                 dbname = creds$db_name, host = creds$host,
+                 port = creds$port, user = creds$user,
+                 password = creds$password)
 }
 
-#' @title conn_rpsql
-#' @description DBI interface for PostgreSQL using the RPostgres library.
-#' @param creds A list with entries for db_name, host, user, password, and port.
 
-conn_rpostgres <- function(creds){
-  # Based on https://github.com/hadley/dplyr/issues/2292
+#' @title conn_bigquery
+#' @description DBI interface for bigquery.
+#' @param creds Path to a service account token with additional keys for project_id, and dataset.
+#' @import bigrquery
 
-  if (0 == length(find.package("RPostgres", quiet = TRUE))) {
-    stop("RPostgres not found. Install from http://github.com/rstats-db/RPostgres")
+conn_bigquery <- function(creds, cred_location, dataset){
+  
+  if (!"bigrquery" %in% as.character(installed.packages(fields = "Name")[,1])) {
+    stop("No bigrquery installation found...Please install before trying again.")
   }
+  
+  message("Setting service account token...")
+  bigrquery::set_service_token(cred_location)
+  
+  message("Creating bigquery connection to dataset: ", dataset)
+  DBI::dbConnect(drv = bigrquery::bigquery(), 
+                 project = creds$project_id,
+                 dataset = dataset,
+                 billing=creds$project_id)
 
-  "%||%" <- function(x, y) if (is.null(x)) y else x
-
-  db_disconnector <- function(con, name, quiet = FALSE) {
-    reg.finalizer(environment(), function(...) {
-      if (!quiet) {
-        message("Auto-disconnecting ", name, " connection ",
-                "(", paste(con@Id, collapse = ", "), ")")
-      }
-      dbDisconnect(con)
-    })
-    environment()
-  }
-
-  src_postgres2 <- function(dbname = NULL, host = NULL, port = NULL, user = NULL,
-                            password = NULL, ...) {
-    if (!requireNamespace("RPostgres", quietly = TRUE)) {
-      stop("RPostgres package required to connect to postgres db", call. = FALSE)
-    }
-
-    user <- user %||% ""
-
-    con <- dbConnect(RPostgres::Postgres(), host = host %||% "", dbname = dbname %||% "",
-                     user = user, password = password %||% "", port = port %||% "", ...)
-    info <- dbGetInfo(con)
-
-    dbplyr::src_sql("postgres", con, info = info,
-                    disco = db_disconnector(con, "postgres"))
-  }
-
-  if (!require(dplyr)) {
-    warning("dplyr not available; could not redefine dplyr::src_postgres")
-    return()
-  }
-
-  unlockBinding("src_postgres", as.environment("package:dplyr"))
-  assignInNamespace("src_postgres", src_postgres2, ns = "dplyr",
-                    as.environment("package:dplyr"))
-  assign("src_postgres", src_postgres2, "package:dplyr")
-  lockBinding("src_postgres", as.environment("package:dplyr"))
-  warning("dplyr::src_postgres has been redefined to use RPostgres!")
-
-  dplyr::src_postgres(dbname = creds$db_name, host = creds$host,
-                      port = creds$port, user = creds$user,
-                      password = creds$password)
 }
