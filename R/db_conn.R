@@ -78,7 +78,7 @@ db_conn <- setRefClass(
         statement = statement_or_path
       }
       
-      DBI::dbSendQuery(conn = .self$connection, str_form(statement, ...))
+      DBI::dbExecute(conn = .self$connection, str_form(statement, ...))
     },
     
     #' @description Return a list of columns from the requested table.
