@@ -254,19 +254,19 @@ conn_mssql <- function(creds){
 
 conn_redshift <- function(creds){
   
-  if (!"RJDBC" %in% as.character(installed.packages(fields = "Name")[,1])) {
-    stop("No RJDBC installation found...Please install before trying again.")
+  if (!"odbc" %in% as.character(installed.packages(fields = "Name")[,1])) {
+    stop("No odbc installation found...Please install before trying again.")
+  }
+  drivers = sort(unique(odbc::odbcListDrivers()[[1]]))
+  rs_driver = drivers[grepl("redshift", drivers, ignore.case = T)]
+  if (length(rs_driver)==0) {
+    stop("No redshift odbc driver found!")
   }
   
-  drv <- RJDBC::JDBC("com.amazon.redshift.jdbc42.Driver",
-                     system.file("RedshiftJDBC42-no-awssdk-1.2.16.1027.jar",
-                                 package = "mmkit"),
-                     identifier.quote = "`")
-  
-  url <- sprintf("jdbc:redshift://%s:%s/%s?tcpKeepAlive=true&ssl=true&sslfactory=com.amazon.redshift.ssl.NonValidatingFactory", 
-                 creds$host, creds$port, creds$db_name)
-  
-  DBI::dbConnect(drv, url, creds$user, creds$password)
+  DBI::dbConnect(odbc::odbc(), Driver=rs_driver[1], 
+                 Database=creds$db_name, Port=creds$port,
+                 UID=creds$user, PWD=creds$password,
+                 Server=creds$host)
 }
 
 #' @title conn_mysql
