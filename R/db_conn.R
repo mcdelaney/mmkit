@@ -252,10 +252,10 @@ conn_redshift <- function(creds){
                                  package = "mmkit"),
                      identifier.quote = "`")
   
-  dbcon = DBI::dbConnect(drv = drv, paste0("jdbc:redshift://", creds$host),
-                         port = creds$port, database = creds$db_name,
-                         UID = creds$user, PWD = creds$password,
-                         ConnSchema = creds$db_name)
+  url <- sprintf("jdbc:redshift://%s:%s/%s?tcpKeepAlive=true&ssl=true&sslfactory=com.amazon.redshift.ssl.NonValidatingFactory", 
+                 creds$host, creds$port, creds$db_name)
+  
+  dbcon = DBI::dbConnect(drv, url, creds$user, creds$password)
   
   dbplyr::src_dbi(con = dbcon)
 }
