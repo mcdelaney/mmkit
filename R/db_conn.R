@@ -259,7 +259,7 @@ conn_redshift <- function(creds){
   }
   
   drv <- RJDBC::JDBC("com.amazon.redshift.jdbc42.Driver",
-                     system.file("RedshiftJDBC42-no-awssdk-1.2.10.1009.jar",
+                     system.file("RedshiftJDBC42-no-awssdk-1.2.16.1027.jar",
                                  package = "mmkit"),
                      identifier.quote = "`")
   
