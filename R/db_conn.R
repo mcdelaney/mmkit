@@ -68,6 +68,14 @@ db_conn <- setRefClass(
       DBI::dbGetQuery(conn = .self$connection, str_form(statement, ...))
     },
     
+    #' @title disconnect
+    #' @description Disconnect from current database.
+    #' @export
+    disconnect = function(){
+      DBI::dbDisconnect(self$con)
+      return(invisible())
+    },
+    
     #' @title send
     #' @description Execute arbitrary sql, expecting no response.
     #' Str_form substitution params supported by default.
