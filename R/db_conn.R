@@ -72,7 +72,7 @@ db_conn <- setRefClass(
     #' @description Disconnect from current database.
     #' @export
     disconnect = function(){
-      DBI::dbDisconnect(self$con)
+      DBI::dbDisconnect(.self$connection)
       return(invisible())
     },
     
