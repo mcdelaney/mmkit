@@ -22,6 +22,9 @@ db_conn <- setRefClass(
       
       message(sprintf("Creating connection to %s.%s", database, creds$db_name))
       
+      database_type <- ifelse(is.null(creds[['database_type']]), 
+                              database_type, creds$database_type)
+      
       connection <<- switch(database_type,
                             "postgres" = conn_postgres(creds = creds),
                             "redshift" = conn_redshift(creds = creds),
@@ -255,9 +258,7 @@ conn_redshift <- function(creds){
   url <- sprintf("jdbc:redshift://%s:%s/%s?tcpKeepAlive=true&ssl=true&sslfactory=com.amazon.redshift.ssl.NonValidatingFactory", 
                  creds$host, creds$port, creds$db_name)
   
-  dbcon = DBI::dbConnect(drv, url, creds$user, creds$password)
-  
-  dbplyr::src_dbi(con = dbcon)
+  DBI::dbConnect(drv, url, creds$user, creds$password)
 }
 
 #' @title conn_mysql
