@@ -26,6 +26,7 @@ db_conn <- setRefClass(
                               database_type, creds$database_type)
       
       connection <<- switch(database_type,
+                            "sqlite" = conn_sqlite(creds = creds),
                             "postgres" = conn_postgres(creds = creds),
                             "redshift" = conn_redshift(creds = creds),
                             "mysql" = conn_mysql(creds = creds),
@@ -182,6 +183,11 @@ db_conn <- setRefClass(
 read_creds <- function(database, ..., cred_location = "~/creds.json") {
   required_fields <- c("db_name", "user", "password", "host", "port")
   
+  if (grepl('sqlite', x=database)) {
+    return(list(db_name=database, 
+                database_type = 'sqlite'))
+  }
+  
   creds = tryCatch(
     jsonlite::fromJSON(cred_location),
     error = function(e) {
@@ -218,12 +224,6 @@ read_creds <- function(database, ..., cred_location = "~/creds.json") {
       str_form(X, db_sub_params)
     })
   }
-  
-  # if (!all(required_fields %in% names(creds))) {
-  #   stop(sprintf("Credentials entry for %s missing keys: %s!",
-  #                database, paste0(required_fields[!required_fields %in% names(creds)],
-  #                                 collapse = ", ")))
-  # }
   
   return(creds)
 }
@@ -284,6 +284,19 @@ conn_mysql <- function(creds){
                  port = creds$port, user = creds$user,
                  password = creds$password)
   
+}
+
+
+#' @title conn_sqlite
+#' @description DBI interface for sqlite
+#' @param creds Creds for sqlite database.
+
+conn_sqlite <- function(creds){
+  
+  if (!"RSQLite" %in% as.character(installed.packages(fields = "Name")[,1])) {
+    stop("No RSQLite installation found...Please install before trying again.")
+  }
+  RSQLite::dbConnect(RSQLite::SQLite(), creds$db_name)
 }
 
 

@@ -33,6 +33,8 @@ Read a sql statement from disk.
 Execute arbitrary sql, expecting a dataframe in response.
 Str_form substitution params supported by default.
 
+Disconnect from current database.
+
 Execute arbitrary sql, expecting no response.
 Str_form substitution params supported by default.
 

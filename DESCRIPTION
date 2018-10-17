@@ -7,9 +7,9 @@ Authors@R: person("Matt", "Delaney", email = "mcdelaney@gmail.com",
 Depends: R (>= 3.1.1)
 License: English Common Law
 LazyData: true
-Suggests: RJDBC, RMySQL, tidyr
-Imports: DBI, dplyr, dbplyr, httr, jsonlite, RPostgreSQL, yaml, stringr, bigrquery
-RoxygenNote: 6.0.1
+Suggests: RJDBC, RMySQL, tidyr, RSQLite, bigrquery
+Imports: DBI, dplyr, dbplyr, httr, jsonlite, RPostgreSQL, yaml, stringr
+RoxygenNote: 6.1.0
 NeedsCompilation: no
 Packaged: 2018-01-14 18:00:07 UTC; mdelaney
 Author: Matt Delaney [aut, cre]
