@@ -6,3 +6,6 @@
 \usage{
 count_pct(data, ..., col = n)
 }
+\description{
+A wrapper for dplyr::count to calculate percentage of
+}

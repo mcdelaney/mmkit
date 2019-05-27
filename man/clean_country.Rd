@@ -4,7 +4,8 @@
 \alias{clean_country}
 \title{clean_country}
 \usage{
-clean_country(country, name_type = "country_name", return_original = FALSE)
+clean_country(country, name_type = "country_name",
+  return_original = FALSE)
 }
 \arguments{
 \item{country}{A vector of unconformed state values.}
