@@ -1,7 +1,7 @@
 Package: mmkit
 Title: mmkit
 Description: Description: Tools for querying databases.
-Version: 0.80
+Version: 0.81
 Authors@R: person("Matt", "Delaney", email = "mcdelaney@gmail.com",
   role = c("aut", "cre"))
 Depends: R (>= 3.1.1)

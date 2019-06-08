@@ -11,7 +11,9 @@
 hot_encode <- function(input_col, output_label, blank_to_na = TRUE) {
 
  message(sprintf("One hot encoding data for %s...", output_label))
-
+ if (is.null(input_col)) {
+   stop("Input column does not exist! Check variable names!")
+ }
  input_class <- class(input_col)
  if (!input_class %in% c('character', 'factor')) {
   stop("Input data class is incorrect.  Must be either factor or character!")
@@ -33,7 +35,7 @@ hot_encode <- function(input_col, output_label, blank_to_na = TRUE) {
  scaff = data.frame(matrix(unlist(vals), nrow = length(vals), byrow = T))
  names(scaff) <- paste0(output_label, "_", levels(input_col))
 
- message("Encoded data successfully craeted...")
+ message("Encoded data successfully created...")
 
   return(scaff)
 }
