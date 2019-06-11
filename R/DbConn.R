@@ -104,7 +104,7 @@ DbConn = R6Class(
         statement = statement_or_path
       }
       
-      DBI::dbExecute(conn = self$con, str_form(statement, ...))
+      DBI::dbExecute(conn = self$con, str_form(statement, ..., is_sql=TRUE))
     },
     
     #' @description Return a list of columns from the requested table.
