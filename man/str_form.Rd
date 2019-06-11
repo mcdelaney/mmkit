@@ -5,7 +5,7 @@
 \title{str_form}
 \usage{
 str_form(file_or_string, ..., variable_identifier = c("{{", "}}"),
-  default_char = "|")
+  default_char = "|", is_sql = FALSE)
 }
 \arguments{
 \item{file_or_string}{A path to a file, or a string that includes substitution parameters}
@@ -16,6 +16,8 @@ params specified in the template. Can also be a named list.}
 \item{variable_identifier}{Identifiers to denote paramters requiring substitution. Defaults to {{ and }}.}
 
 \item{default_char}{default: pipe}
+
+\item{is_sql}{If TRUE, str_form will collapse list arguments to string automatically.}
 }
 \description{
 A poor mans version of python jinja2 templating

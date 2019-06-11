@@ -4,4 +4,10 @@
 #' @param  X A vector or list
 #' @export
 
-sql_lst <- function(X){ paste(X, collapse = "','") }
+sql_lst <- function(X){ 
+  if (inherits(X, "character")) {
+    paste0("('", paste(X, collapse = "','"), "')")
+  }else{
+    paste0("(", paste(X, collapse = ","), ")")
+  }
+}

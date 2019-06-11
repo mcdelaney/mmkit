@@ -79,7 +79,7 @@ DbConn = R6Class(
         statement = statement_or_path
       }
       
-      DBI::dbGetQuery(conn = self$con, str_form(statement, ...))
+      DBI::dbGetQuery(conn = self$con, str_form(statement, ..., is_sql=TRUE))
     },
     
     #' @title disconnect
