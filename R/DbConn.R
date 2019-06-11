@@ -264,7 +264,8 @@ conn_postgres <- function(creds){
     stop("No RPostgres installation found...Please install before trying again.")
   }
   
-  DBI::dbConnect(drv = RPostgres::Postgres(),
+  RPostgreSQL::dbConnect(drv = RPostgreSQL::PostgreSQL(),
+                 # drv = RPostgreSQL::PPostgres(),
                  dbname = creds$db_name, host = creds$host,
                  port = creds$port, user = creds$user,
                  password = creds$password)
