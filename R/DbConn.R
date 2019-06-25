@@ -20,23 +20,26 @@
 DbConn = R6Class(
   'DbConn',
   
-  public=list(
-    database=NA,
-    cred_location=NA,
-    creds=list(),
-    con=NA,
+  public = list(
+    database = NA,
+    cred_location = NA,
+    creds = list(),
+    con = NA,
+    log = NA,
     
     initialize = function(database, 
                           ..., 
                           cred_location = "~/creds.json",
                           init_sql = NA, 
                           dataset=NA) {
+      self$log <- logging::getLogger('DbConn')
+      logging::setLevel('INFO')
       
       self$database <- database
       self$cred_location <- cred_location
       self$creds <- mmkit::read_creds(database, cred_location=self$cred_location)
       
-      message(sprintf("Creating connection to %s.%s", database, self$creds$db_name))
+      self$log$info("Creating connection to %s.%s", database, self$creds$db_name)
       
       if (is.null(self$creds$database_type)) {
         stop("Credentials file must specify database_type!") 
@@ -54,7 +57,7 @@ DbConn = R6Class(
                               mysql, redshift or ms_sql"))
       
       if (!is.na(init_sql)) {
-        message(sprintf('Executing sql: %s', init_sql))
+        self$log$info('Executing sql: %s', init_sql)
         self$send(init_sql)
       }
       
@@ -79,7 +82,11 @@ DbConn = R6Class(
         statement = statement_or_path
       }
       
-      DBI::dbGetQuery(conn = self$con, str_form(statement, ..., is_sql=TRUE))
+      data <- DBI::dbGetQuery(conn = self$con, 
+                                 str_form(statement, ..., is_sql=TRUE))
+      # data <- DBI::dbFetch(result, n=100000)
+      # DBI::dbClearResult(result)
+      return(data)
     },
     
     #' @title disconnect
