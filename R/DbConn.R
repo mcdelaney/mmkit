@@ -291,7 +291,7 @@ conn_bigquery <- function(creds, cred_location, dataset){
   }
   
   message("Setting service account token...")
-  bigrquery::set_service_token(cred_location)
+  bigrquery::bq_auth(path=cred_location)
   
   message("Creating bigquery connection to dataset: ", dataset)
   DBI::dbConnect(drv = bigrquery::bigquery(), 
