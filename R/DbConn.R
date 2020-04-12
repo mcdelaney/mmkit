@@ -83,7 +83,7 @@ DbConn = R6Class(
       }
       
       data <- DBI::dbGetQuery(conn = self$con, 
-                                 str_form(statement, ..., is_sql=TRUE))
+                              str_form(statement, ..., is_sql=TRUE), page_size=1000)
       # data <- DBI::dbFetch(result, n=100000)
       # DBI::dbClearResult(result)
       return(data)
