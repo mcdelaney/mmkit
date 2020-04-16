@@ -16,7 +16,7 @@ db_conn <- function(database, ...,
   mmkit::DbConn$new(database=database, 
                     ..., 
                     cred_location=cred_location,
-                    database_type = "postgres", 
-                    init_sql = NA, 
-                    dataset=NA)
+                    database_type = database_type, 
+                    init_sql = init_sql, 
+                    dataset=dataset)
 }
