@@ -26,6 +26,7 @@ DbConn = R6Class(
     creds = list(),
     con = NA,
     log = NA,
+    dataset = NA,
     
     initialize = function(database, 
                           ..., 
@@ -34,7 +35,7 @@ DbConn = R6Class(
                           dataset=NA) {
       self$log <- logging::getLogger('DbConn')
       logging::setLevel('INFO')
-      
+      self$dataset <- dataset
       self$database <- database
       self$cred_location <- cred_location
       self$creds <- mmkit::read_creds(database, cred_location=self$cred_location)
@@ -51,8 +52,7 @@ DbConn = R6Class(
                          "mysql" = conn_mysql(creds = self$creds),
                          "ms_sql" = conn_mssql(creds = self$creds),
                          "bigquery" = conn_bigquery(creds = self$creds, 
-                                                    cred_location = self$cred_location,
-                                                    dataset = dataset),
+                                                    cred_location = self$cred_location),
                          stop("Database type must be postgres, rpostgres, bigquery,
                               mysql, redshift or ms_sql"))
       
@@ -84,8 +84,6 @@ DbConn = R6Class(
       
       data <- DBI::dbGetQuery(conn = self$con, 
                               str_form(statement, ..., is_sql=TRUE))
-      # data <- DBI::dbFetch(result, n=100000)
-      # DBI::dbClearResult(result)
       return(data)
     },
     
@@ -284,7 +282,7 @@ conn_postgres <- function(creds){
 #' @param creds Path to a service account token with additional keys for project_id, and dataset.
 #' @import bigrquery
 
-conn_bigquery <- function(creds, cred_location, dataset){
+conn_bigquery <- function(creds, cred_location){
   
   if (!"bigrquery" %in% as.character(installed.packages(fields = "Name")[,1])) {
     stop("No bigrquery installation found...Please install before trying again.")
@@ -293,11 +291,14 @@ conn_bigquery <- function(creds, cred_location, dataset){
   message("Setting service account token...")
   bigrquery::bq_auth(path=cred_location)
   
-  message("Creating bigquery connection to dataset: ", dataset)
-  DBI::dbConnect(drv = bigrquery::bigquery(), 
+  message("Creating bigquery connection to dataset: ", self$dataset)
+  con <- DBI::dbConnect(drv = bigrquery::bigquery(), 
                  project = creds$project_id,
-                 dataset = dataset,
+                 dataset = self$dataset,
                  billing=creds$project_id)
+  con@dataset <- self$dataset
+  con@page_size <- as.integer(5000)
+  return(con)
 
 }
 
