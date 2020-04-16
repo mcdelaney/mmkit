@@ -35,9 +35,10 @@ DbConn = R6Class(
                           dataset=NA) {
       self$log <- logging::getLogger('DbConn')
       logging::setLevel('INFO')
-      self$dataset <- dataset
-      self$database <- database
-      self$cred_location <- cred_location
+      args <- as.list(match.call(expand.dots=T))
+      self$dataset <- args$dataset
+      self$database <- args$database
+      self$cred_location <- args$cred_location
       self$creds <- mmkit::read_creds(database, cred_location=self$cred_location)
       
       self$log$info("Creating connection to %s.%s", database, self$creds$db_name)
