@@ -300,6 +300,7 @@ conn_bigquery <- function(creds, cred_location, dataset){
                  billing=creds$project_id)
   con@dataset <- dataset
   con@page_size <- as.integer(5000)
+  con@bigint <- "integer64"
   return(con)
 
 }
