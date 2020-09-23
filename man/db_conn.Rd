@@ -4,8 +4,14 @@
 \alias{db_conn}
 \title{db_con}
 \usage{
-db_conn(database, ..., cred_location = "~/creds.json",
-  database_type = "postgres", init_sql = NA, dataset = NA)
+db_conn(
+  database,
+  ...,
+  cred_location = "~/creds.json",
+  database_type = "postgres",
+  init_sql = NA,
+  dataset = NA
+)
 }
 \arguments{
 \item{database}{Name of database for which the connection should created.  Must correspond to a creds.json file key.}

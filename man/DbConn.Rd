@@ -4,59 +4,171 @@
 \name{DbConn}
 \alias{DbConn}
 \title{read_sql}
-\format{\code{\link{R6Class}} object.}
-\usage{
-DbConn
-}
-\arguments{
-\item{database}{Name of database for which the connection should created.  Must correspond to a creds.json file key.}
-
-\item{cred_location}{Path to a json credentials file with keys corresponding to database names.
-Each database entry should have the following fields: db_name, user, password, host, port, database_type
-Defaults to creds.json in user root directory.}
-
-\item{init_sql}{A sql statement to execute on connection; optional.}
-
-\item{table}{Name of table for which columns should be returned.}
-
-\item{match_string}{String to search for in columns.
-Partial matching applied. Optional.}
-
-\item{schema}{Name of schema for which tables should be returned. If blank,
-all tables will be returned.}
-
-\item{match_string}{String to search for in columns.
-Partial matching applied. Optional.}
+\format{
+\code{\link{R6Class}} object.
 }
 \value{
 Object of \code{\link{R6Class}} with methods for query execution.
 }
 \description{
 Delivering dead simple database connections since June 7th 2016.
-
-Read a sql statement from disk.
-
-Execute arbitrary sql, expecting a dataframe in response.
-Str_form substitution params supported by default.
-
-Disconnect from current database.
-
-Execute arbitrary sql, expecting no response.
-Str_form substitution params supported by default.
-
-Return a list of columns from the requested table.
-
-Return a list of tables from the requested schema.
 }
 \details{
 DbConn
 }
-\section{Fields}{
-
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{con}}{A DBI compliant connection, extracted from dplyr_src.}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{connection}}{A dplyr src connection object used to execute queries.}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{DbConn$new()}}
+\item \href{#method-read_sql}{\code{DbConn$read_sql()}}
+\item \href{#method-query}{\code{DbConn$query()}}
+\item \href{#method-disconnect}{\code{DbConn$disconnect()}}
+\item \href{#method-send}{\code{DbConn$send()}}
+\item \href{#method-get_cols}{\code{DbConn$get_cols()}}
+\item \href{#method-get_tables}{\code{DbConn$get_tables()}}
+\item \href{#method-clone}{\code{DbConn$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$new(
+  database,
+  ...,
+  cred_location = "~/creds.json",
+  init_sql = NA,
+  dataset = NA
+)}\if{html}{\out{</div>}}
+}
 
-\item{\code{con}}{A DBI compliant connection, extracted from dplyr_src.}
-}}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{database}}{Name of database for which the connection should created.  Must correspond to a creds.json file key.}
 
-\keyword{datasets}
+\item{\code{cred_location}}{Path to a json credentials file with keys corresponding to database names.
+Each database entry should have the following fields: db_name, user, password, host, port, database_type
+Defaults to creds.json in user root directory.}
+
+\item{\code{init_sql}}{A sql statement to execute on connection; optional.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-read_sql"></a>}}
+\if{latex}{\out{\hypertarget{method-read_sql}{}}}
+\subsection{Method \code{read_sql()}}{
+Read a sql statement from disk.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$read_sql(filepath)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-query"></a>}}
+\if{latex}{\out{\hypertarget{method-query}{}}}
+\subsection{Method \code{query()}}{
+Execute arbitrary sql, expecting a dataframe in response.
+Str_form substitution params supported by default.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$query(statement_or_path, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-disconnect"></a>}}
+\if{latex}{\out{\hypertarget{method-disconnect}{}}}
+\subsection{Method \code{disconnect()}}{
+Disconnect from current database.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$disconnect()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-send"></a>}}
+\if{latex}{\out{\hypertarget{method-send}{}}}
+\subsection{Method \code{send()}}{
+Execute arbitrary sql, expecting no response.
+Str_form substitution params supported by default.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$send(statement_or_path, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_cols"></a>}}
+\if{latex}{\out{\hypertarget{method-get_cols}{}}}
+\subsection{Method \code{get_cols()}}{
+Return a list of columns from the requested table.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$get_cols(table, match_string = NA)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{table}}{Name of table for which columns should be returned.}
+
+\item{\code{match_string}}{String to search for in columns.
+Partial matching applied. Optional.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_tables"></a>}}
+\if{latex}{\out{\hypertarget{method-get_tables}{}}}
+\subsection{Method \code{get_tables()}}{
+Return a list of tables from the requested schema.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$get_tables(schema = NA, match_string = NA, exclude_system = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{schema}}{Name of schema for which tables should be returned. If blank,
+all tables will be returned.}
+
+\item{\code{match_string}}{String to search for in columns.
+Partial matching applied. Optional.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DbConn$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

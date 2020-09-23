@@ -4,8 +4,11 @@
 \alias{vars_requested}
 \title{vars_requested}
 \usage{
-vars_requested(file_or_string, variable_identifier = c("{{", "}}"),
-  default_char = "|")
+vars_requested(
+  file_or_string,
+  variable_identifier = c("{{", "}}"),
+  default_char = "|"
+)
 }
 \arguments{
 \item{file_or_string}{A path to a file, or a string that includes substitution parameters}

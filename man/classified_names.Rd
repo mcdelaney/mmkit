@@ -4,7 +4,9 @@
 \name{classified_names}
 \alias{classified_names}
 \title{classified_names}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 35311 rows and 2 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 35311 rows and 2 columns.
+}
 \usage{
 classified_names
 }

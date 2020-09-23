@@ -4,8 +4,13 @@
 \alias{str_form}
 \title{str_form}
 \usage{
-str_form(file_or_string, ..., variable_identifier = c("{{", "}}"),
-  default_char = "|", is_sql = FALSE)
+str_form(
+  file_or_string,
+  ...,
+  variable_identifier = c("{{", "}}"),
+  default_char = "|",
+  is_sql = FALSE
+)
 }
 \arguments{
 \item{file_or_string}{A path to a file, or a string that includes substitution parameters}

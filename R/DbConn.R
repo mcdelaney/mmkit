@@ -39,24 +39,26 @@ DbConn = R6Class(
       self$dataset <- dataset
       self$database <- database
       self$cred_location <- cred_location
-      self$creds <- mmkit::read_creds(database, cred_location=self$cred_location)
       
-      self$log$info("Creating connection to %s.%s", database, self$creds$db_name)
-      
-      if (is.null(self$creds$database_type)) {
-        stop("Credentials file must specify database_type!") 
+      if (database != "bigquery2") {
+          self$creds <- mmkit::read_creds(database, cred_location=self$cred_location)
+          self$log$info("Creating connection to %s.%s", database, self$creds$db_name)
+          if (is.null(self$creds$database_type)) {
+            stop("Credentials file must specify database_type!") 
+          }
+        self$con <- switch(self$creds$database_type,
+                           "postgres" = conn_postgres(creds = self$creds),
+                           "redshift" = conn_redshift(creds = self$creds),
+                           "bigquery" = conn_bigquery(creds = self$creds, 
+                                                      cred_location = self$cred_location,
+                                                      dataset = self$dataset),
+                           stop("Database type must be postgres, rpostgres, bigquery,
+                            mysql, redshift or ms_sql"))
+        
+      }else{
+        self$con <-conn_bigquery2()
       }
       
-      self$con <- switch(self$creds$database_type,
-                         "postgres" = conn_postgres(creds = self$creds),
-                         "redshift" = conn_redshift(creds = self$creds),
-                         "mysql" = conn_mysql(creds = self$creds),
-                         "ms_sql" = conn_mssql(creds = self$creds),
-                         "bigquery" = conn_bigquery(creds = self$creds, 
-                                                    cred_location = self$cred_location,
-                                                    dataset = self$dataset),
-                         stop("Database type must be postgres, rpostgres, bigquery,
-                              mysql, redshift or ms_sql"))
       
       if (!is.na(init_sql)) {
         self$log$info('Executing sql: %s', init_sql)
@@ -84,8 +86,14 @@ DbConn = R6Class(
         statement = statement_or_path
       }
       
-      data <- DBI::dbGetQuery(conn = self$con, 
-                              str_form(statement, ..., is_sql=TRUE))
+      if (self$database == "bigquery2") {
+        data <- self$con$query(str_form(statement, ..., is_sql=TRUE), arrow=TRUE)
+        data <- as.data.frame(data)
+      }else{
+        data <- DBI::dbGetQuery(conn = self$con, 
+                                str_form(statement, ..., is_sql=TRUE)) 
+      }
+      
       return(data)
     },
     
@@ -242,22 +250,22 @@ conn_redshift <- function(creds){
                  Server=creds$host)
 }
 
-#' @title conn_mysql
-#' @description DBI interface for mysql.
-#' @param creds A list with entries for db_name, host, user, password, and port.
-
-conn_mysql <- function(creds){
-  
-  if (!"RMySQL" %in% as.character(installed.packages(fields = "Name")[,1])) {
-    stop("No RMySQL installation found...Please install before trying again.")
-  }
-  
-  DBI::dbConnect(drv = RMySQL::MySQL(), 
-                 dbname = creds$db_name, host = creds$host,
-                 port = creds$port, user = creds$user,
-                 password = creds$password)
-  
-}
+#' #' @title conn_mysql
+#' #' @description DBI interface for mysql.
+#' #' @param creds A list with entries for db_name, host, user, password, and port.
+#' 
+#' conn_mysql <- function(creds){
+#'   
+#'   if (!"RMySQL" %in% as.character(installed.packages(fields = "Name")[,1])) {
+#'     stop("No RMySQL installation found...Please install before trying again.")
+#'   }
+#'   
+#'   DBI::dbConnect(drv = RMySQL::MySQL(), 
+#'                  dbname = creds$db_name, host = creds$host,
+#'                  port = creds$port, user = creds$user,
+#'                  password = creds$password)
+#'   
+#' }
 
 
 #' @title conn_postgres
@@ -303,6 +311,18 @@ conn_bigquery <- function(creds, cred_location, dataset){
   con@bigint <- "integer64"
   return(con)
 
+}
+
+#' @title conn_bigquery2
+#' @description Interface to bigquery.
+#' @import reticulate
+#' @import arrow
+
+conn_bigquery2 <- function(){
+  message("Creating bigquery connection...")
+  con <- reticulate::import("etllib")$Big()
+  return(con)
+  
 }
 
 #' @title read_creds

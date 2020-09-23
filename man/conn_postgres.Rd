@@ -12,3 +12,6 @@ conn_postgres(creds)
 \description{
 DBI interface for postgresql.
 }
+\details{
+
+}

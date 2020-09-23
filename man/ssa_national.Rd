@@ -4,7 +4,9 @@
 \name{ssa_national}
 \alias{ssa_national}
 \title{ssa_national}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 1603026 rows and 4 columns.}
+\format{
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 1603026 rows and 4 columns.
+}
 \usage{
 ssa_national
 }
