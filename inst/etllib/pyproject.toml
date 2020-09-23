@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "etllib"
+version = "0.1.4"
+description = "Tools to simplify interfacing with bigquery and GCP"
+authors = ["Matt Delaney <mcdelaney@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+google-cloud-bigquery = "^1.26.1"
+google-cloud-bigquery-storage = "^1.0.0"
+pandas = "^1.1.0"
+pyarrow = "^1.0.0"
+slackclient = "^2.8.0"
+google-cloud-secret-manager = "^1.0.0"
+google-auth = "^1.20.1"
+google-cloud-storage = "^1.30.0"
+sqlalchemy = "^1.3.19"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.dephell.main]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "setuppy", path = "setup.py"}

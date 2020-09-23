@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: etllib
+Version: 0.1.4
+Summary: Tools to simplify interfacing with bigquery and GCP
+Home-page: UNKNOWN
+Author: Matt Delaney
+Author-email: mcdelaney@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: ==3.*,>=3.7.0
+Provides-Extra: dev

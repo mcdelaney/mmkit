@@ -1,0 +1,14 @@
+setup.py
+./etllib/__init__.py
+./etllib/redashboarder.py
+./etllib/test_bq.py
+./etllib/utils.py
+etllib/__init__.py
+etllib/redashboarder.py
+etllib/test_bq.py
+etllib/utils.py
+etllib.egg-info/PKG-INFO
+etllib.egg-info/SOURCES.txt
+etllib.egg-info/dependency_links.txt
+etllib.egg-info/requires.txt
+etllib.egg-info/top_level.txt
