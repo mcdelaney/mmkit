@@ -209,24 +209,24 @@ DbConn = R6Class(
 )
 
 
-#' @title conn_msql
-#' @description DBI interface for microsoft sql server.
-#' @param creds A list with entries for db_name, host, user, password, and port.
-
-conn_mssql <- function(creds){
-  
-  if (!"RJDBC" %in% as.character(installed.packages(fields = "Name")[,1])) {
-    stop("No RJDBC installation found...Please install before trying again.")
-  }
-  
-  drv <- RJDBC::JDBC("com.microsoft.sqlserver.jdbc.SQLServerDriver",
-                     system.file("mssql_sqljdbc4.jar", package = "mmkit"),
-                     identifier.quote = "`")
-  
-  RJDBC::dbConnect(drv = drv, str_form("jdbc:sqlserver://{{host}}:{{port}}",
-                                       host = creds$host, port = creds$port),
-                   user = creds$user, password = creds$password)
-}
+#' #' @title conn_msql
+#' #' @description DBI interface for microsoft sql server.
+#' #' @param creds A list with entries for db_name, host, user, password, and port.
+#' 
+#' conn_mssql <- function(creds){
+#'   
+#'   if (!"RJDBC" %in% as.character(installed.packages(fields = "Name")[,1])) {
+#'     stop("No RJDBC installation found...Please install before trying again.")
+#'   }
+#'   
+#'   drv <- RJDBC::JDBC("com.microsoft.sqlserver.jdbc.SQLServerDriver",
+#'                      system.file("mssql_sqljdbc4.jar", package = "mmkit"),
+#'                      identifier.quote = "`")
+#'   
+#'   RJDBC::dbConnect(drv = drv, str_form("jdbc:sqlserver://{{host}}:{{port}}",
+#'                                        host = creds$host, port = creds$port),
+#'                    user = creds$user, password = creds$password)
+#' }
 
 
 #' @title conn_redshift
@@ -268,62 +268,62 @@ conn_redshift <- function(creds){
 #' }
 
 
-#' @title conn_postgres
-#' @description DBI interface for postgresql.
-#' @param creds A list with entries for db_name, host, user, password, and port.
-#' @import RPostgres
+#' #' @title conn_postgres
+#' #' @description DBI interface for postgresql.
+#' #' @param creds A list with entries for db_name, host, user, password, and port.
+#' #' @import RPostgres
+#' 
+#' conn_postgres <- function(creds){
+#'   
+#'   if (!"RPostgres" %in% as.character(installed.packages(fields = "Name")[,1])) {
+#'     stop("No RPostgres installation found...Please install before trying again.")
+#'   }
+#'   
+#'   RPostgreSQL::dbConnect(drv = RPostgreSQL::PostgreSQL(),
+#'                  # drv = RPostgreSQL::PPostgres(),
+#'                  dbname = creds$db_name, host = creds$host,
+#'                  port = creds$port, user = creds$user,
+#'                  password = creds$password)
+#' }
 
-conn_postgres <- function(creds){
-  
-  if (!"RPostgres" %in% as.character(installed.packages(fields = "Name")[,1])) {
-    stop("No RPostgres installation found...Please install before trying again.")
-  }
-  
-  RPostgreSQL::dbConnect(drv = RPostgreSQL::PostgreSQL(),
-                 # drv = RPostgreSQL::PPostgres(),
-                 dbname = creds$db_name, host = creds$host,
-                 port = creds$port, user = creds$user,
-                 password = creds$password)
-}
 
+#' #' @title conn_bigquery
+#' #' @description DBI interface for bigquery.
+#' #' @param creds Path to a service account token with additional keys for project_id, and dataset.
+#' #' @import bigrquery
+#' 
+#' conn_bigquery <- function(creds, cred_location, dataset){
+#'   
+#'   if (!"bigrquery" %in% as.character(installed.packages(fields = "Name")[,1])) {
+#'     stop("No bigrquery installation found...Please install before trying again.")
+#'   }
+#'   
+#'   message("Setting service account token...")
+#'   bigrquery::bq_auth(path=cred_location)
+#'   
+#'   message("Creating bigquery connection to dataset: ", dataset)
+#'   con <- DBI::dbConnect(drv = bigrquery::bigquery(), 
+#'                  project = creds$project_id,
+#'                  dataset = dataset,
+#'                  billing=creds$project_id)
+#'   con@dataset <- dataset
+#'   con@page_size <- as.integer(5000)
+#'   con@bigint <- "integer64"
+#'   return(con)
+#' 
+#' }
 
-#' @title conn_bigquery
-#' @description DBI interface for bigquery.
-#' @param creds Path to a service account token with additional keys for project_id, and dataset.
-#' @import bigrquery
-
-conn_bigquery <- function(creds, cred_location, dataset){
-  
-  if (!"bigrquery" %in% as.character(installed.packages(fields = "Name")[,1])) {
-    stop("No bigrquery installation found...Please install before trying again.")
-  }
-  
-  message("Setting service account token...")
-  bigrquery::bq_auth(path=cred_location)
-  
-  message("Creating bigquery connection to dataset: ", dataset)
-  con <- DBI::dbConnect(drv = bigrquery::bigquery(), 
-                 project = creds$project_id,
-                 dataset = dataset,
-                 billing=creds$project_id)
-  con@dataset <- dataset
-  con@page_size <- as.integer(5000)
-  con@bigint <- "integer64"
-  return(con)
-
-}
-
-#' @title conn_bigquery2
-#' @description Interface to bigquery.
-#' @import reticulate
-#' @import arrow
-
-conn_bigquery2 <- function(){
-  message("Creating bigquery connection...")
-  con <- reticulate::import("etllib")$Big()
-  return(con)
-  
-}
+#' #' @title conn_bigquery2
+#' #' @description Interface to bigquery.
+#' #' @import reticulate
+#' #' @import arrow
+#' 
+#' conn_bigquery2 <- function(){
+#'   message("Creating bigquery connection...")
+#'   con <- reticulate::import("etllib")$Big()
+#'   return(con)
+#'   
+#' }
 
 #' @title read_creds
 #' @description Read database credentials from a file like creds.json

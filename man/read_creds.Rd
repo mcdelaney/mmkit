@@ -10,3 +10,6 @@ read_creds(database, ..., cred_location = "~/creds.json")
 Read database credentials from a file like creds.json
 See params in \code{\link{mmkit::db_conn}}
 }
+\details{
+
+}

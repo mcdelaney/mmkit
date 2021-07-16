@@ -12,3 +12,6 @@ conn_redshift(creds)
 \description{
 DBI interface for amazon redshift.
 }
+\details{
+
+}
